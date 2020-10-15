@@ -46,7 +46,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     keywords='cassandra,cql,aws,sigv4,authentication,auth',
-    packages=find_packages(where='cassandra_sigv4'),
+    packages=find_packages(exclude=["tests"]),
     python_requires='>=2.7, <4',
     install_requires=['cassandra-driver', 'boto3', 'six'],
     tests_require=["mock"],
