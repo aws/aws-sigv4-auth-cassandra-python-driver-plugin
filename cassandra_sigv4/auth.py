@@ -93,7 +93,7 @@ def _extract_nonce(challenge):
 
 def _format_timestamp(date_time):
     return "{0}.{1:03d}Z".format(date_time.strftime(_SIGV4_TIMESTAMP_FORMAT),
-                                 round(date_time.microsecond / 1000))
+                                 int(round(date_time.microsecond / 1000)))
 
 
 def _format_datestamp(date_time):
