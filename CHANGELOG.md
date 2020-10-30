@@ -1,5 +1,10 @@
 # CHANGELOG
 
-## [4.0.0] - 2020-08-XX
+## [4.0.2] - 2020-10-30
 
-Initial Release
+* Fix Readme and Changelog
+* Fix Python2 Compatibility
+
+## [4.0.0] - 2020-10-15
+
+* Initial Release
