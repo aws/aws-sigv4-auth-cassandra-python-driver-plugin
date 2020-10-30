@@ -23,7 +23,7 @@ long_description = (pathlib.Path(__file__).parent.resolve() / 'README.md').read_
 
 setup(
     name='cassandra-sigv4',
-    version='4.0.0',
+    version='4.0.2',
     description='Implements a sigv4 authentication plugin for the open-source Datastax Python Driver for Apache Cassandra',
     long_description=long_description,
     long_description_content_type='text/markdown',
