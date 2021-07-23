@@ -64,7 +64,7 @@ You can use the `AWS_REGION` environment variable to match the endpoint that you
 communicating with by setting it as part of your application start-up, as follows.
 
 ``` shell
-$ export AWS_REGION=us-east-1
+$ export AWS_REGION=us-east-2
 ```
 
 ## Constructor
