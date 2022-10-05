@@ -4,12 +4,12 @@ The current version is 4.0.2. Please see the [changelog](./CHANGELOG.md) for det
 
 # What
 
-This package implements an authentication plugin for the open-source Datastax Python Driver for Apache Cassandra. 
-The driver enables you to add authentication information to your API requests using the AWS Signature Version 4 Process (SigV4). 
-Using the plugin, you can provide users and applications short-term credentials to access Amazon Keyspaces (for Apache Cassandra) 
+This package implements an authentication plugin for the open-source Datastax Python Driver for Apache Cassandra.
+The driver enables you to add authentication information to your API requests using the AWS Signature Version 4 Process (SigV4).
+Using the plugin, you can provide users and applications short-term credentials to access Amazon Keyspaces (for Apache Cassandra)
 using AWS Identity and Access Management (IAM) users and roles.
 
-The plugin depends on the AWS SDK for Python (Boto3). It uses `boto3.Session` to obtain credentials. 
+The plugin depends on the AWS SDK for Python (Boto3). It uses `boto3.Session` to obtain credentials.
 
 
 # Example Usage
@@ -37,7 +37,7 @@ The following sections describe how to use the authentication plugin for the ope
 ## SSL Configuration
 
 The first step is to get an Amazon digital certificate to encrypt your connections using Transport Layer Security (TLS).
-The DataStax Python driver must use an SSL CA certificate so that the client SSL engine can validate the Amazon Keyspaces 
+The DataStax Python driver must use an SSL CA certificate so that the client SSL engine can validate the Amazon Keyspaces
 certificate on connection.
 
 ``` python
@@ -60,11 +60,11 @@ You can specify the Region using one of the following four methods:
 
 ## Environment Variable
 
-You can use the `AWS_REGION` environment variable to match the endpoint that you are 
+You can use the `AWS_DEFAULT_REGION` environment variable to match the endpoint that you are
 communicating with by setting it as part of your application start-up, as follows.
 
 ``` shell
-$ export AWS_REGION=us-east-2
+$ export AWS_DEFAULT_REGION=us-east-2
 ```
 
 ## Constructor
