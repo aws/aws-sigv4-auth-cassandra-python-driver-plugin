@@ -26,7 +26,7 @@ from botocore.credentials import Credentials
 
 from cassandra_sigv4.auth import _extract_nonce, _generate_signature, _generate_canonical_request, \
     _generate_signing_key, \
-    _format_datestamp, _generate_scope, SigV4AuthProvider
+    _format_datestamp, _generate_scope, SigV4AuthProvider, _format_timestamp
 
 _test_timestamp = datetime(year=2020, month=6, day=9, hour=22, minute=41, second=51)
 _test_nonce = "91703fdc2ef562e19fbdab0f58e42fe5"
@@ -103,6 +103,28 @@ class HelperMethodTests(unittest.TestCase):
         result = _generate_scope(date_stamp, _test_region)
 
         self.assertEqual(expected, result)
+
+    def test_format_timestamp_with_high_microseconds(self):
+        # Test case that reproduces the bug with microseconds that round up to 1000
+        dt = datetime(year=2025, month=7, day=6, hour=13, minute=57, second=58, microsecond=999500)
+        result = _format_timestamp(dt)
+        # This currently returns "2025-07-06T13:57:58.1000Z" which is wrong
+        # It should return "2025-07-06T13:57:59.000Z" or "2025-07-06T13:57:58.999Z"
+        self.assertNotEqual(result, "2025-07-06T13:57:58.1000Z", "Format should not produce 4-digit milliseconds")
+        
+    def test_format_timestamp_edge_cases(self):
+        # Test various edge cases
+        test_cases = [
+            (datetime(2025, 1, 1, 0, 0, 0, 0), "2025-01-01T00:00:00.000Z"),
+            (datetime(2025, 1, 1, 0, 0, 0, 500), "2025-01-01T00:00:00.000Z"),  # Truncates to 0ms
+            (datetime(2025, 1, 1, 0, 0, 0, 999000), "2025-01-01T00:00:00.999Z"),
+            (datetime(2025, 1, 1, 0, 0, 0, 999499), "2025-01-01T00:00:00.999Z"),
+            (datetime(2025, 1, 1, 0, 0, 0, 999500), "2025-01-01T00:00:00.999Z"),  # Truncates to 999ms
+        ]
+        
+        for dt, expected in test_cases:
+            result = _format_timestamp(dt)
+            self.assertEqual(result, expected, f"Unexpected result for {dt}")
 
 
 if __name__ == '__main__':
