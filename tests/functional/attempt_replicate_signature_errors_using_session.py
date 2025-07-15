@@ -7,6 +7,11 @@ import ssl
 import time
 import threading
 import boto3
+<<<<<<< HEAD
+=======
+import os
+import urllib.request
+>>>>>>> ca15ae9 (Add test to reproduce connection errors)
 from datetime import datetime
 from cassandra.cluster import Cluster
 from cassandra_sigv4.auth import SigV4AuthProvider
@@ -38,7 +43,23 @@ def create_short_lived_session(role_arn, region, role_session_duration=900):
         region_name=region
     )
 
+<<<<<<< HEAD
 def worker_thread(thread_id, session, endpoint, role_session_duration, results):
+=======
+def download_starfield_certificate():
+    """Download the Starfield certificate at runtime."""
+    cert_url = "https://certs.secureserver.net/repository/sf-class2-root.crt"
+    cert_file = "sf-class2-root.crt.temp"
+    
+    # Download the certificate
+    print(f"[{datetime.now()}] Downloading Starfield certificate...")
+    urllib.request.urlretrieve(cert_url, cert_file)
+    print(f"[{datetime.now()}] Certificate downloaded successfully")
+    
+    return cert_file
+
+def worker_thread(thread_id, session, endpoint, role_session_duration, results, cert_file):
+>>>>>>> ca15ae9 (Add test to reproduce connection errors)
     """Worker thread that connects and queries Keyspaces."""
     print(f"[{datetime.now()}] Thread {thread_id}: Starting")
     
@@ -48,7 +69,11 @@ def worker_thread(thread_id, session, endpoint, role_session_duration, results):
         
         # Create SSL context
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+<<<<<<< HEAD
         ssl_context.load_verify_locations('sf-class2-root.crt')
+=======
+        ssl_context.load_verify_locations(cert_file)
+>>>>>>> ca15ae9 (Add test to reproduce connection errors)
         ssl_context.verify_mode = ssl.CERT_REQUIRED
         
         # Create cluster
@@ -142,22 +167,39 @@ def run_multithreaded_test(region, endpoint, account_id, role_name, num_threads=
     # Create and start threads
     threads = []
     role_session_duration = test_duration * 60
+
+    # Initialize threads list
+    threads = []
     
-    # Create shared session from short lived credentials derived from a role to check if we run into errors when role's session expires (when logic to trigger explicit credential refresh doesn't exist)
-    session = create_short_lived_session(role_arn, region)
-    
-    for i in range(num_threads):
-        thread = threading.Thread(
-            target=worker_thread,
-            args=(i, session, endpoint, role_session_duration, results)
-        )
-        threads.append(thread)
-        thread.start()
-        time.sleep(1)  # Stagger thread starts slightly
-    
-    # Wait for all threads to complete
-    for thread in threads:
-        thread.join()
+    cert_file = None
+    try:
+        # Download the certificate
+        cert_file = download_starfield_certificate()
+        
+        # Create shared session from short lived credentials derived from a role to check if we run into errors when role's session expires (when logic to trigger explicit credential refresh doesn't exist)
+        session = create_short_lived_session(role_arn, region)
+        
+        for i in range(num_threads):
+            thread = threading.Thread(
+                target=worker_thread,
+                args=(i, session, endpoint, role_session_duration, results, cert_file)
+            )
+            threads.append(thread)
+            thread.start()
+            time.sleep(1)  # Stagger thread starts slightly
+        
+        # Wait for all threads to complete
+        for thread in threads:
+            thread.join()
+            
+    except Exception as e:
+        print(f"[{datetime.now()}] Error in test execution: {e}")
+        return False
+    finally:
+        # Clean up the certificate file
+        if cert_file and os.path.exists(cert_file):
+            os.remove(cert_file)
+            print(f"[{datetime.now()}] Removed temporary certificate file")
     
     # Print results
     print(f"\n[{datetime.now()}] Multi-threaded test completed")
@@ -198,6 +240,49 @@ def run_multithreaded_test(region, endpoint, account_id, role_name, num_threads=
         return True
 
 if __name__ == "__main__":
+<<<<<<< HEAD
+=======
+    # Create .gitignore if it doesn't exist to ensure cert files aren't committed
+    gitignore_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".gitignore")
+    if not os.path.exists(gitignore_path):
+        with open(gitignore_path, "w") as f:
+            f.write("# Ignore certificate files\n*.crt\n*.crt.temp\n")
+    else:
+        # Ensure certificate patterns are in .gitignore
+        with open(gitignore_path, "r") as f:
+            content = f.read()
+        if "*.crt" not in content:
+            with open(gitignore_path, "a") as f:
+                f.write("\n# Ignore certificate files\n*.crt\n*.crt.temp\n")
+    
+    parser = argparse.ArgumentParser(description="Multi-threaded test for SigV4 signature errors")
+    parser.add_argument("--region", required=True, help="AWS region")
+    parser.add_argument("--endpoint", required=True, help="Keyspaces endpoint")
+    parser.add_argument("--account-id", required=True, help="AWS account ID for the role")
+    parser.add_argument("--role-name", required=True, help="IAM role name to assume")
+    parser.add_argument("--threads", type=int, default=5, help="Number of threads")
+    parser.add_argument("--duration", type=int, default=10, help="Test duration in minutes")
+    
+    args = parser.parse_args()
+    
+    success = run_multithreaded_test(args.region, args.endpoint, args.account_id, args.role_name, args.threads, args.duration)
+    sys.exit(0 if success else 1)
+
+if __name__ == "__main__":
+    # Create .gitignore if it doesn't exist to ensure cert files aren't committed
+    gitignore_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".gitignore")
+    if not os.path.exists(gitignore_path):
+        with open(gitignore_path, "w") as f:
+            f.write("# Ignore certificate files\n*.crt\n*.crt.temp\n")
+    else:
+        # Ensure certificate patterns are in .gitignore
+        with open(gitignore_path, "r") as f:
+            content = f.read()
+        if "*.crt" not in content:
+            with open(gitignore_path, "a") as f:
+                f.write("\n# Ignore certificate files\n*.crt\n*.crt.temp\n")
+    
+>>>>>>> ca15ae9 (Add test to reproduce connection errors)
     parser = argparse.ArgumentParser(description="Multi-threaded test for SigV4 signature errors")
     parser.add_argument("--region", required=True, help="AWS region")
     parser.add_argument("--endpoint", required=True, help="Keyspaces endpoint")

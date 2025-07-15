@@ -15,10 +15,17 @@ ROLE_NAME="$4"
 THREADS="${5:-5}"
 DURATION="${6:-10}"
 
-# Ensure we're in the virtual environment
+# Check if we need to set up the test environment
 if [ ! -d "venv" ]; then
-    echo "Virtual environment not found. Please run ./setup_test_env.sh first."
-    exit 1
+    echo "Virtual environment not found. Running setup_test_env.sh..."
+    ./setup_test_env.sh
+    
+    # Check if setup was successful
+    if [ ! -d "venv" ]; then
+        echo "Failed to create virtual environment. Please check setup_test_env.sh for errors."
+        exit 1
+    fi
+    echo "Test environment setup completed successfully."
 fi
 
 # Activate the virtual environment if not already activated
@@ -31,7 +38,17 @@ echo "Running multi-threaded test for signature errors..."
 echo "Threads: ${THREADS}"
 echo "Duration: ${DURATION} minutes"
 
+<<<<<<< HEAD
 python attempt_replicate_signature_errors.py --region "$REGION" --endpoint "$ENDPOINT" --account-id "$ACCOUNT_ID" --role-name "$ROLE_NAME" --threads "$THREADS" --duration "$DURATION"
+=======
+# Determine the correct path to the Python script
+SCRIPT_PATH="attempt_replicate_signature_errors_using_session.py"
+if [ ! -f "$SCRIPT_PATH" ] && [ -f "tests/functional/$SCRIPT_PATH" ]; then
+    SCRIPT_PATH="tests/functional/$SCRIPT_PATH"
+fi
+
+python "$SCRIPT_PATH" --region "$REGION" --endpoint "$ENDPOINT" --account-id "$ACCOUNT_ID" --role-name "$ROLE_NAME" --threads "$THREADS" --duration "$DURATION"
+>>>>>>> ca15ae9 (Add test to reproduce connection errors)
 
 # Check the exit code
 if [ $? -eq 0 ]; then
