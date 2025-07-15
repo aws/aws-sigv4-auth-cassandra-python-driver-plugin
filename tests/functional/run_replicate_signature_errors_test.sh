@@ -4,7 +4,7 @@
 # Check if required arguments are provided
 if [ "$#" -lt 4 ]; then
     echo "Usage: $0 <region> <endpoint> <account-id> <role-name> [threads] [duration_minutes]"
-    echo "Example: $0 us-east-1 cassandra.us-east-1.amazonaws.com 768726360020 KeyspacesIntegrationTestRole 10 15"
+    echo "Example: $0 us-east-1 cassandra.us-east-1.amazonaws.com <> KeyspacesIntegrationTestRole 10 15"
     exit 1
 fi
 
@@ -38,9 +38,6 @@ echo "Running multi-threaded test for signature errors..."
 echo "Threads: ${THREADS}"
 echo "Duration: ${DURATION} minutes"
 
-<<<<<<< HEAD
-python attempt_replicate_signature_errors.py --region "$REGION" --endpoint "$ENDPOINT" --account-id "$ACCOUNT_ID" --role-name "$ROLE_NAME" --threads "$THREADS" --duration "$DURATION"
-=======
 # Determine the correct path to the Python script
 SCRIPT_PATH="attempt_replicate_signature_errors_using_session.py"
 if [ ! -f "$SCRIPT_PATH" ] && [ -f "tests/functional/$SCRIPT_PATH" ]; then
@@ -48,7 +45,6 @@ if [ ! -f "$SCRIPT_PATH" ] && [ -f "tests/functional/$SCRIPT_PATH" ]; then
 fi
 
 python "$SCRIPT_PATH" --region "$REGION" --endpoint "$ENDPOINT" --account-id "$ACCOUNT_ID" --role-name "$ROLE_NAME" --threads "$THREADS" --duration "$DURATION"
->>>>>>> ca15ae9 (Add test to reproduce connection errors)
 
 # Check the exit code
 if [ $? -eq 0 ]; then
